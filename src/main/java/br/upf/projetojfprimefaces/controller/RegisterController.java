@@ -9,21 +9,18 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-@Named(value = "usuarioController")
+@Named(value = "registerController")
 @SessionScoped
-public class UsuarioController implements Serializable {
+public class RegisterController implements Serializable {
 
     @EJB
     private br.upf.projetojfprimefaces.facade.UsuarioFacade ejbFacade;
 
-    //objeto que representa um usuario
+    //objeto que representa uma usuario
     private UsuarioEntity usuario = new UsuarioEntity();
-    //objeto que representa uma lista de usuarios
-    private List<UsuarioEntity> usuarioList = new ArrayList<>();
+    
 
     private UsuarioEntity selected;
 
@@ -44,17 +41,10 @@ public class UsuarioController implements Serializable {
         this.usuario = usuario;
     }
 
-    public List<UsuarioEntity> getUsuarioList() {
-        return ejbFacade.buscarTodos();
-    }
-
-    public void setUsuarioList(List<UsuarioEntity> usuarioList) {
-        this.usuarioList = usuarioList;
-    }
 
     /**
      * Método utilizado para executar algumas ações antes de abrir o formulário
-     * de criação de um usuario
+     * de criação de uma usuario
      *
      * @return
      */
@@ -67,19 +57,10 @@ public class UsuarioController implements Serializable {
         //buscando a datahoraatual do sistema.
         Date datahoraAtual = new Timestamp(System.currentTimeMillis());
         usuario.setDatahorareg(datahoraAtual);
-        persist(UsuarioController.PersistAction.CREATE, 
+        persist(RegisterController.PersistAction.CREATE, 
                 "Registro incluído com sucesso!");
     }
 
-    public void editarPessoa() {
-        persist(UsuarioController.PersistAction.UPDATE, 
-                "Registro alterado com sucesso!");
-    }
-
-    public void deletarPessoa() {
-        persist(UsuarioController.PersistAction.DELETE, 
-                "Registro excluído com sucesso!");
-    }
 
     public static void addErrorMessage(String msg) {
         FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg);

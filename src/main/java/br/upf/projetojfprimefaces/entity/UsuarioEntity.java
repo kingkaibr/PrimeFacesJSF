@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "user")//mapeando o nome da tabela no banco de dados
+@Table(name = "usuario")//mapeando o nome da tabela no banco de dados
 public class UsuarioEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -27,9 +27,9 @@ public class UsuarioEntity implements Serializable {
     @Column(name = "id")
     private Integer id;
 
-    @Basic(optional = false) //atributo não é opcional
-    @NotNull //definido como obrigatório
-    @Size(min = 1, max = 500) //quantidade min e max de caracteres
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 500)
     @Column(name = "nome")
     private String nome;
 

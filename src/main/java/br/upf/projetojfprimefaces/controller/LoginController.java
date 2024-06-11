@@ -7,6 +7,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpSession;
 import java.io.Serializable;
 
 @Named(value = "loginController")
@@ -40,10 +41,19 @@ public class LoginController implements Serializable {
      * @return
      */
     public String validarLogin() {
+        
+        FacesContext context = FacesContext.getCurrentInstance();
+        
+        HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+                
+        
         UsuarioEntity usuarioDB = ejbFacade.buscarPorEmail(usuario.getEmail(), usuario.getSenha());
+        
         if ((usuarioDB != null && usuarioDB.getId() != null)) {
             //caso as credenciais foram válidas, então direciona para página index
-            return "/user.xhtml?faces-redirect=true";
+            
+            session.setAttribute("usuarioLogado", usuarioDB);
+            return "/admin/user.xhtml?faces-redirect=true";
         } else {
             //senão, exibe uma mensagem de falha...
             FacesMessage fm = new FacesMessage(
@@ -53,6 +63,17 @@ public class LoginController implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, fm);
             return null;
         }
+    }
+    
+    public String logout(){
+        FacesContext context = FacesContext.getCurrentInstance();
+        
+        HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+        
+        session.invalidate();
+        
+        return "/login.xhtml?faces-redirect=true";
+        
     }
 
     public UsuarioEntity getUsuario() {

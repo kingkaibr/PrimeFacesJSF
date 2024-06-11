@@ -24,7 +24,7 @@ public class UsuarioFacade extends AbstractFacade<UsuarioEntity> {
     }
 
     /**
-     * Construtor que passa para superclasse a instância de UsuarioEntity
+     * Construtor que passa para superclasse a instância de PessoaEntity
      */
     public UsuarioFacade() {
         super(UsuarioEntity.class);
@@ -48,7 +48,7 @@ public class UsuarioFacade extends AbstractFacade<UsuarioEntity> {
     }
 
     /**
-     * Buscar um usuario por email
+     * Buscar uma pessoa por email
      * @param email
      * @param senha
      * @return 

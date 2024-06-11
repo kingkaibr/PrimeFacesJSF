@@ -37,7 +37,7 @@
                         <div class="col-12">
                             <div class="input-wrapper ui-input-icon-left">
                                 <i class="pi pi-user"/>
-                                <p:inputText id="nome" value="#{registerController.pessoa.nome}" 
+                                <p:inputText id="nome" value="#{registerController.usuario.nome}" 
                                              autocomplete="off" 
                                              required="true" requiredMessage="O Email é obrigatório!" 
                                              placeholder="Nome"/> 
@@ -46,7 +46,7 @@
                         <div class="col-12">
                             <div class="input-wrapper ui-input-icon-left">
                                 <i>@</i>
-                                <p:inputText id="email" value="#{registerController.pessoa.email}" 
+                                <p:inputText id="email" value="#{registerController.usuario.email}" 
                                              autocomplete="off" 
                                              required="true" requiredMessage="O Email é obrigatório!" 
                                              placeholder="E-mail"/> 
@@ -55,7 +55,7 @@
                         <div class="col-12">
                             <div class="input-wrapper ui-input-icon-left">
                                 <i class="pi pi-lock"/>                                
-                                <p:password id="senha" value="#{registerController.pessoa.senha}" 
+                                <p:password id="senha" value="#{registerController.usuario.senha}" 
                                              autocomplete="off" 
                                              required="true" requiredMessage="A senha é obrigatória!" 
                                              placeholder="Senha"/>
@@ -63,10 +63,10 @@
                         </div>
                         <div class="col-12 button-container" style="margin-top: 20px;">                            
                             <p:commandButton id="btnLogar" value="Acessar" update="@form"
-                                             action="#{registerController.validarRegistro()}" />
+                                             action="#{registerController.adicionarUsuario()}" />
                         </div>
                         <div class="col-12" style="margin-top: 20px; text-align: left;">
-                            <span>Ja possui conta? </span><h:link value="Registrar" outcome="login.xhtml" />
+                            <span>Ja possui conta? </span><h:link value="Logar" outcome="login.xhtml" />
                         </div>
                     </div>
                 </div>
