@@ -1,0 +1,162 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">
+        <h:outputText value="Entradas"></h:outputText>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="frmList">            
+            <h:panelGroup id="pngList"> 
+                <p:growl id="growl" showDetail="true" />
+                <p:fieldset toggleable="true">
+                    <p:dataTable id="datalistentrada" value="#{entradaController.entradaList}" var="item"   
+                                 selectionMode="single" selection="#{entradaController.selected}"
+                                 widgetVar="datalistEntradaWidgetVar"
+                                 rowKey="#{item.id}"
+                                 paginator="true"
+                                 rows="5"
+                                 rowsPerPageTemplate="5,10,50,100"
+                                 emptyMessage="Nenhuma entrada cadastrada..."
+                                 sortMode="single"
+                                 >
+                        <!--Ação AJAX para atualizar somente os botões definidos em update -->
+                        <!--quando selecionado ou não -->
+                        <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView"/>
+                        <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView"/>
+
+                        <p:column width="4%" sortBy="#{item.id}" filterBy="#{item.id}">
+                            <f:facet name="header">
+                                <h:outputText value="ID"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </p:column>
+
+                        <p:column width="6%" sortBy="#{item.datahorareg}" filterBy="#{item.datahorareg}">
+                            <f:facet name="header">
+                                <h:outputText value="Registro"/>
+                            </f:facet>
+                            <h:outputText value="#{item.datahorareg}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column width="10%" sortBy="#{item.nome}" filterBy="#{item.nome}">
+                            <f:facet name="header">
+                                <h:outputText value="Nome"/>
+                            </f:facet>
+                            <h:outputText value="#{item.nome}"/>
+                        </p:column>
+
+
+                        <f:facet name="footer">
+                            <!--Botão utilizado para abrir a modal de criação -->
+                            <p:commandButton id="btnCreate" value="Incluir Tipo Entrada"  icon="pi pi-file" 
+                                             actionListener="#{entradaController.prepareAdicionar()}"
+                                             update=":CreateForm"
+                                             onclick="PF('dlgCreate').show()"/>  
+
+                            <!--Botão utilizado para abrir a modal de edição -->
+                            <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar Tipo Entrada" 
+                                             update="formEdit" oncomplete="PF('dlgEdit').show()" 
+                                             disabled="#{empty entradaController.selected}"/>
+
+                            <!--Botão utilizado para excluir o registro selecionado-->                            
+                            <p:commandButton id="btnDelete" icon="pi pi-trash"  value="Excluir Tipo Entrada" 
+                                             actionListener="#{entradaController.deletarEntrada()}" update="frmList" 
+                                             disabled="#{empty entradaController.selected}">
+                                <p:confirm header="Confirmar Exclusão" message="Você confirma exclusão do registro?" 
+                                           icon="ui-icon-alert"  />
+                            </p:commandButton>
+
+                            <!--Botão utilizado para abrir a modal de visualização -->
+                            <p:commandButton id="btnView" icon="pi pi-user-edit"  value="Detalhes da Entrada" 
+                                             update="formView" oncomplete="PF('dlgView').show()" 
+                                             disabled="#{empty entradaController.selected}"/>
+
+                        </f:facet>
+                    </p:dataTable>
+                </p:fieldset>
+                <!--Diálogo para confirmação da exclusão -->
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+                </p:confirmDialog>
+
+            </h:panelGroup>
+        </h:form>
+
+        <p:dialog header="Novo tipo de entrada" widgetVar="dlgCreate" height="450" width="600" showEffect="fade" modal="true">
+            <h:form id="CreateForm">
+                <p:growl id="growl" showDetail="true" />
+                <h:panelGrid id="pngCadastro" columns="2">   
+                    <p:outputLabel id="oplNome" value="Nome:" for="iptNome"/>
+                    <p:inputText id="iptNome" size="40" label="Nome" required="true" 
+                                 requiredMessage="O atributo nome é obrigatório"
+                                 value="#{entradaController.entrada.nome}" maxlength="50" />                    
+
+
+                </h:panelGrid>   
+                
+                <p:commandButton actionListener="#{entradaController.adicionarEntrada()}" 
+                                 icon="pi pi-save" value="Cadastrar" 
+                                 update=":frmList, CreateForm" 
+                                onclick="dlgCreate.hide()"/>
+                    
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Editar tipo de entrada" widgetVar="dlgEdit"  height="500" width="600" showEffect="fade" modal="true">
+            <h:form id="formEdit">
+                <p:growl id="growl" showDetail="true" />
+                <h:panelGrid id="pngEdicao" columns="2" rendered="#{entradaController.selected != null}">   
+                    <p:outputLabel id="oplId" value="ID:" for="iptId"/>
+                    <p:inputText id="iptId" size="10" label="ID" disabled="true"
+                                 value="#{entradaController.selected.id}"  />
+
+                    <p:outputLabel id="oplDatahorareg" for="ipmDatahorareg" value="Registro"  />
+                    <p:inputText id="ipmDatahorareg" value="#{entradaController.selected.datahorareg}"  disabled="true">
+                        <f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo" />
+                    </p:inputText>
+
+                    <p:outputLabel id="oplNome" value="Nome:" for="iptNome"/>
+                    <p:inputText id="iptNome" size="40" label="Nome" required="true" 
+                                 requiredMessage="O atributo nome é obrigatório"
+                                 value="#{entradaController.selected.nome}" maxlength="50" />
+
+
+
+                </h:panelGrid>   
+                <p:commandButton id="btnSalvarEdicao" value="Salvar" update="@form, :frmList" 
+                                 onclick="dlgEdit.hide()" icon="pi pi-save"
+                                 action="#{entradaController.editarEntrada()}" />
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Visualizar Detalhes do tipo de entrada" widgetVar="dlgView"  height="250" 
+                  width="500" showEffect="fade" modal="true">
+            <h:form id="formView">
+                <h:panelGrid id="pngView" columns="2" rendered="#{entradaController.selected != null}">    
+                    <p:outputLabel value="ID:" />
+                    <p:outputLabel value="#{entradaController.selected.id}"  />
+
+                    <p:outputLabel value="Registro"  />
+                    <p:outputLabel value="#{entradaController.selected.datahorareg}"  >
+                        <f:convertDateTime pattern="dd/MM/yy HH:mm"  />
+                    </p:outputLabel>
+
+                    <p:outputLabel value="Nome: " />
+                    <p:outputLabel value="#{entradaController.selected.nome}" />
+
+                </h:panelGrid>   
+            </h:form>
+        </p:dialog>
+    </ui:define>
+
+</ui:composition>
+
+
