@@ -55,7 +55,7 @@
                                              update=":CreateForm"
                                              onclick="PF('dlgCreate').show()"/>  
 
-                            <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar Tipo Saída" 
+                            <p:commandButton id="btnEdit" icon="pi pi-pencil"  value="Editar Tipo Saída" 
                                              update="formEdit" oncomplete="PF('dlgEdit').show()" 
                                              disabled="#{empty saidaController.selected}"/>
 
@@ -66,7 +66,7 @@
                                            icon="ui-icon-alert"  />
                             </p:commandButton>
 
-                            <p:commandButton id="btnView" icon="pi pi-user-edit"  value="Detalhes da Saída" 
+                            <p:commandButton id="btnView" icon="pi pi-info"  value="Detalhes da Saída" 
                                              update="formView" oncomplete="PF('dlgView').show()" 
                                              disabled="#{empty saidaController.selected}"/>
                         </f:facet>

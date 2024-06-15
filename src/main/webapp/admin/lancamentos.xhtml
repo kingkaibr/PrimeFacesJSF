@@ -1,0 +1,266 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml"
+                xmlns:c="jakarta.tags.core">
+
+    <ui:define name="title">
+        <h:outputText value="Entradas"></h:outputText>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="frmList">            
+            <h:panelGroup id="pngList"> 
+                <p:growl id="growl" showDetail="true" />
+                <p:fieldset toggleable="true">
+                    <p:dataTable id="datalistlancamento" value="#{lancamentosController.lancamentosList}" var="item"   
+                                 selectionMode="single" selection="#{lancamentosController.selected}"
+                                 widgetVar="datalistLancamentoWidgetVar"
+                                 rowKey="#{item.id}"
+                                 paginator="true"
+                                 rows="5"
+                                 rowsPerPageTemplate="5,10,50,100"
+                                 emptyMessage="Nenhum lancamentos cadastrado..."
+                                 sortMode="single"
+                                 >
+                        <!--Ação AJAX para atualizar somente os botões definidos em update -->
+                        <!--quando selecionado ou não -->
+                        <p:ajax event="rowSelect"   update="btnEdit btnDelete "/>
+                        <p:ajax event="rowUnselect" update="btnEdit btnDelete "/>
+
+                        <p:column width="4%" sortBy="#{item.id}" filterBy="#{item.id}">
+                            <f:facet name="header">
+                                <h:outputText value="ID"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </p:column>
+
+                        <p:column width="6%" sortBy="#{item.data}" >
+                            <f:facet name="header">
+                                <h:outputText value="Data"/>
+                            </f:facet>
+                            <h:outputText value="#{item.data}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column width="10%" sortBy="#{item.operacao}" filterBy="#{item.operacao}">
+                            <f:facet name="header">
+                                <h:outputText value="Operacao"/>
+                            </f:facet>
+                            <h:outputText value="#{item.operacao}"/>
+                        </p:column>
+                        
+                        <p:column width="10%" sortBy="#{item.entrada}" filterBy="#{item.entrada}">
+                            <f:facet name="header">
+                                <h:outputText value="Tipo Entrada"/>
+                            </f:facet>
+                            <h:outputText rendered="${item.entrada != -1}" value="#{entradaController.getEntradaByID(item.entrada).getNome()}"/>
+                        </p:column>
+                        
+                        <p:column width="10%" sortBy="#{item.saida}" filterBy="#{item.saida}">
+                            <f:facet name="header">
+                                <h:outputText value="Tipo Saida"/>
+                            </f:facet>
+                            <h:outputText rendered="${item.saida != -1}" value="#{saidaController.getSaidaById(item.saida).getNome()}"/>
+                        </p:column>
+                        
+                        <p:column width="10%" sortBy="#{item.descricao}" filterBy="#{item.descricao}">
+                            <f:facet name="header">
+                                <h:outputText value="Descricao"/>
+                            </f:facet>
+                            <h:outputText value="#{item.descricao}"/>
+                        </p:column>
+                         
+                        <p:column width="10%" sortBy="#{item.valor}" filterBy="#{item.valor}">
+                            <f:facet name="header">
+                                <h:outputText value="Valor"/>
+                            </f:facet>
+                            <h:outputText value="#{item.valor}">
+                                <f:convertNumber type="currency" currencySymbol="R$" />
+                            </h:outputText>
+                        </p:column>
+
+
+                        <f:facet name="footer">
+                            <!--Botão utilizado para abrir a modal de criação -->
+                            <p:commandButton id="btnCreate" value="Incluir Lancamento"  icon="pi pi-file" 
+                                             actionListener="#{lancamentosController.prepareAdicionar()}"
+                                             update=":CreateForm"
+                                            onclick="PF('dlgCreate').show()">   
+                            </p:commandButton>
+
+                            <!--Botão utilizado para abrir a modal de edição -->
+                            <p:commandButton id="btnEdit" icon="pi pi-pencil"  value="Editar Lancamento" 
+                                             update="formEdit" oncomplete="PF('dlgEdit').show()" 
+                                             disabled="#{empty lancamentosController.selected}">
+                                </p:commandButton>
+
+                            <!--Botão utilizado para excluir o registro selecionado-->                            
+                            <p:commandButton id="btnDelete" icon="pi pi-info"  value="Excluir Lancamento" 
+                                             actionListener="#{lancamentosController.deletarLancamentos()}" update="frmList" 
+                                             disabled="#{empty lancamentosController.selected}">
+                                <p:confirm header="Confirmar Exclusão" message="Você confirma exclusão do registro?" 
+                                           icon="ui-icon-alert"  />
+                            </p:commandButton>
+
+                       
+
+                        </f:facet>
+                    </p:dataTable>
+                </p:fieldset>
+                <!--Diálogo para confirmação da exclusão -->
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+                </p:confirmDialog>
+
+            </h:panelGroup>
+        </h:form>
+
+        <p:dialog header="Novo Lancamento" widgetVar="dlgCreate" height="450" width="600" showEffect="fade" modal="true">
+            
+            <h:form id="CreateForm">
+                <p:growl id="growl" showDetail="true" />
+
+                <h:panelGrid id="pngCadastro" columns="2">   
+                    <h:outputLabel for="selectOperacao" value="Operacao:" />
+                    <p:selectOneMenu id="selectOperacao" value="#{lancamentosController.lancamentos.operacao}" required="true" requiredMessage="O operacao é obrigatório">
+                        <f:selectItem itemLabel="Selecione..." noSelectionOption="true" />
+                        <f:selectItem itemLabel="Entrada" itemValue="entrada" />
+                        <f:selectItem itemLabel="Saída" itemValue="saida" />
+                        <f:ajax render="selectSaida" />
+                        <f:ajax render="selectEntrada" />
+
+                    </p:selectOneMenu>
+                    
+                    <h:outputLabel for="selectSaida" value="Tipo Saída:" />
+                    <p:selectOneMenu disabled="#{lancamentosController.lancamentos.operacao eq 'entrada'}" id="selectSaida" 
+                                     value="#{lancamentosController.lancamentos.saida}"
+                                      required="true" requiredMessage="O tipo de entrada é obrigatório">
+                        <f:selectItem itemLabel="Selecione..." noSelectionOption="true" />
+                        <f:selectItems value="#{saidaController.saidaList}" var="saida"
+                                       itemLabel="#{saida.nome}" itemValue="#{saida.id}" />
+                    </p:selectOneMenu>
+                    <h:outputLabel for="selectEntrada" value="Tipo Entrada:" />
+                    <p:selectOneMenu disabled="#{lancamentosController.lancamentos.operacao eq 'saida'}" id="selectEntrada" 
+                                     value="#{lancamentosController.lancamentos.entrada}"
+                                      required="true" requiredMessage="O tipo de entrada é obrigatório">
+                        <f:selectItem itemLabel="Selecione..." noSelectionOption="true" />
+                        <f:selectItems value="#{entradaController.entradaList}" var="entrada"
+                                       itemLabel="#{entrada.nome}" itemValue="#{entrada.id}" />
+                    </p:selectOneMenu>
+                    
+                    <p:outputLabel id="oplData" value="Data: " for="iptData" />
+                    <p:calendar id="iptData" size="20" label="Data" required="true"
+                                requiredMessage="A data é obrigatória"
+                                value="#{lancamentosController.lancamentos.data}">
+                    </p:calendar>
+                    
+                    <p:outputLabel id="oplValor" value="Valor: " for="iptValor" />
+                    <p:inputText id="iptValor" size="20" label="Valor" required="true"
+                                 requiredMessage="O atributo valor é obrigatório"
+                                 type="number"
+                                 value="#{lancamentosController.lancamentos.valor}">
+                    </p:inputText>
+                    
+                    <p:outputLabel id="oplDescricao" value="Descricao: " for="iptDescricao"/>
+                    <p:inputText id="iptDescricao" size="40" label="Descricao" 
+                                 value="#{lancamentosController.lancamentos.descricao}" maxlength="50" />    
+                    
+                </h:panelGrid>   
+                
+                <p:commandButton actionListener="#{lancamentosController.adicionarLancamentos()}" 
+                                 icon="pi pi-save" value="Cadastrar" 
+                                 update=":frmList, CreateForm" 
+                                onclick="dlgCreate.hide()"/>
+                    
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Editar Lancamento" widgetVar="dlgEdit" height="500" width="600" showEffect="fade" modal="true">
+        <h:form id="formEdit">
+            <p:growl id="growl" showDetail="true" />
+
+            <h:panelGrid id="pngEdicao" columns="2" rendered="#{lancamentosController.selected != null}">
+                <p:outputLabel id="oplId" value="ID:" for="iptId"/>
+                <p:inputText id="iptId" size="10" label="ID" disabled="true"
+                             value="#{lancamentosController.selected.id}" />
+
+                <p:outputLabel id="oplData" value="Data:" for="iptData"/>
+                <p:calendar id="iptData" size="20" label="Data" required="true"
+                            requiredMessage="A data é obrigatória"
+                            value="#{lancamentosController.selected.data}">
+                </p:calendar>
+                    <h:outputLabel for="selectOperacao" value="Operacao:" />
+                    <p:selectOneMenu id="selectOperacao" value="#{lancamentosController.selected.operacao}" required="true" requiredMessage="O operacao é obrigatório">
+                        <f:selectItem itemLabel="Selecione..." noSelectionOption="true" />
+                        <f:selectItem itemLabel="Entrada" itemValue="entrada" />
+                        <f:selectItem itemLabel="Saída" itemValue="saida" />
+                        <f:ajax render="selectSaida" />
+                        <f:ajax render="selectEntrada" />
+
+                    </p:selectOneMenu>
+                    
+                    <h:outputLabel for="selectSaida" value="Tipo Saída:" />
+                    <p:selectOneMenu disabled="#{lancamentosController.selected.operacao eq 'entrada'}" id="selectSaida" 
+                                     value="#{lancamentosController.selected.saida}"
+                                      required="true" requiredMessage="O tipo de saida é obrigatório">
+                        <f:selectItem itemLabel="Selecione..." noSelectionOption="true" />
+                        <f:selectItems value="#{saidaController.saidaList}" var="saida"
+                                       itemLabel="#{saida.nome}" itemValue="#{saida.id}" />
+                    </p:selectOneMenu>
+                    <h:outputLabel for="selectEntrada" value="Tipo Entrada:" />
+                    <p:selectOneMenu disabled="#{lancamentosController.selected.operacao eq 'saida'}" id="selectEntrada" 
+                                     value="#{lancamentosController.selected.entrada}"
+                                      required="true" requiredMessage="O tipo de entrada é obrigatório">
+                        <f:selectItem itemLabel="Selecione..." noSelectionOption="true" />
+                        <f:selectItems value="#{entradaController.entradaList}" var="entrada"
+                                       itemLabel="#{entrada.nome}" itemValue="#{entrada.id}" />
+                    </p:selectOneMenu>
+
+                <p:outputLabel id="oplValor" value="Valor:" for="iptValor"/>
+                <p:inputText id="iptValor" size="20" label="Valor" required="true"
+                             requiredMessage="O atributo valor é obrigatório"
+                             type="number"
+                             value="#{lancamentosController.selected.valor}">
+                </p:inputText>
+
+                <p:outputLabel id="oplDescricao" value="Descrição:" for="iptDescricao"/>
+                <p:inputText id="iptDescricao" size="40" label="Descrição"
+                             value="#{lancamentosController.selected.descricao}" maxlength="50" />
+
+            </h:panelGrid>
+
+            <p:commandButton id="btnSalvarEdicao" value="Salvar" update=":frmList" 
+                             onclick="PF('dlgEdit').hide()" icon="pi pi-save"
+                             action="#{lancamentosController.editarLancamentos()}" />
+
+        </h:form>
+    </p:dialog>
+
+        
+    </ui:define>
+<script type="text/javascript">
+    function handleOperacaoChange() {
+        var operacao = document.getElementById("form:selectOperacao").value;
+        var selectSaida = document.getElementById("form:selectSaida");
+        var selectEntrada = document.getElementById("form:selectEntrada");
+        
+        if (operacao === 'entrada') {
+            selectSaida.disabled = true;
+            selectEntrada.disabled = false;
+        } else if (operacao === 'saida') {
+            selectSaida.disabled = false;
+            selectEntrada.disabled = true;
+        } else {
+            selectSaida.disabled = true;
+            selectEntrada.disabled = true;
+        }
+    }
+</script>
+</ui:composition>
+
+

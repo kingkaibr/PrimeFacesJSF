@@ -61,7 +61,7 @@
                                              onclick="PF('dlgCreate').show()"/>  
 
                             <!--Botão utilizado para abrir a modal de edição -->
-                            <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar Tipo Entrada" 
+                            <p:commandButton id="btnEdit" icon="pi pi-pencil"  value="Editar Tipo Entrada" 
                                              update="formEdit" oncomplete="PF('dlgEdit').show()" 
                                              disabled="#{empty entradaController.selected}"/>
 
@@ -74,7 +74,7 @@
                             </p:commandButton>
 
                             <!--Botão utilizado para abrir a modal de visualização -->
-                            <p:commandButton id="btnView" icon="pi pi-user-edit"  value="Detalhes da Entrada" 
+                            <p:commandButton id="btnView" icon="pi pi-info"  value="Detalhes da Entrada" 
                                              update="formView" oncomplete="PF('dlgView').show()" 
                                              disabled="#{empty entradaController.selected}"/>
 

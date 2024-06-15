@@ -1,6 +1,6 @@
 package br.upf.projetojfprimefaces.controller;
 
-import br.upf.projetojfprimefaces.entity.SaidaEntity;
+import br.upf.projetojfprimefaces.entity.LancamentosEntity;
 import jakarta.ejb.EJB;
 import jakarta.ejb.EJBException;
 import jakarta.inject.Named;
@@ -8,79 +8,75 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-@Named("saidaController")
+@Named("lancamentosController")
 @SessionScoped
-public class SaidaController implements Serializable {
+public class LancamentosController implements Serializable {
 
     @EJB
-    private br.upf.projetojfprimefaces.facade.SaidaFacade ejbFacade;
+    private br.upf.projetojfprimefaces.facade.LancamentosFacade ejbFacade;
 
-    //objeto que representa uma saida
-    private SaidaEntity saida = new SaidaEntity();
-    //objeto que representa uma lista de saidas
-    private List<SaidaEntity> saidaList = new ArrayList<>();
+    //objeto que representa uma lancamentos
+    private LancamentosEntity lancamentos = new LancamentosEntity();
+    //objeto que representa uma lista de lancamentoss
+    private List<LancamentosEntity> lancamentosList = new ArrayList<>();
 
-    private SaidaEntity selected;
+    private LancamentosEntity selected;
 
     //atributo que será utilizado no momento da seleção da linha na datatable
-    public SaidaEntity getSelected() {
+    public LancamentosEntity getSelected() {
         return selected;
     }
 
-    public void setSelected(SaidaEntity selected) {
+    public void setSelected(LancamentosEntity selected) {
         this.selected = selected;
     }
 
-    public SaidaEntity getSaida() {
-        return saida;
+    public LancamentosEntity getLancamentos() {
+        return lancamentos;
     }
 
-    public void setSaida(SaidaEntity pessoa) {
-        this.saida = pessoa;
+    public void setLancamentos(LancamentosEntity pessoa) {
+        this.lancamentos = pessoa;
     }
 
-    public List<SaidaEntity> getSaidaList() {
-        if (saidaList == null || saidaList.isEmpty()) {
-            saidaList = ejbFacade.buscarTodos();
+    public List<LancamentosEntity> getLancamentosList() {
+        if (lancamentosList == null || lancamentosList.isEmpty()) {
+            lancamentosList = ejbFacade.buscarTodos();
         }
-        return saidaList;
+        return lancamentosList;
     }
 
-    public void setSaidaList(List<SaidaEntity> saidaList) {
-        this.saidaList = saidaList;
+    public void setLancamentosList(List<LancamentosEntity> lancamentosList) {
+        this.lancamentosList = lancamentosList;
     }
 
     /**
      * Método utilizado para executar algumas ações antes de abrir o formulário
-     * de criação de uma saida
+     * de criação de uma lancamentos
      *
      * @return
      */
-    public SaidaEntity prepareAdicionar() {
-        saida = new SaidaEntity();
-        return saida;
+    public LancamentosEntity prepareAdicionar() {
+        lancamentos = new LancamentosEntity();
+        return lancamentos;
     }
 
-    public void adicionarSaida() {
-        //buscando a datahoraatual do sistema.
-        Date datahoraAtual = new Timestamp(System.currentTimeMillis());
-        saida.setDatahorareg(datahoraAtual);
-        persist(SaidaController.PersistAction.CREATE, 
+    public void adicionarLancamentos() {
+        
+        persist(LancamentosController.PersistAction.CREATE, 
                 "Registro incluído com sucesso!");
     }
 
-    public void editarSaida() {
-        persist(SaidaController.PersistAction.UPDATE, 
+    public void editarLancamentos() {
+        persist(LancamentosController.PersistAction.UPDATE, 
                 "Registro alterado com sucesso!");
     }
 
-    public void deletarSaida() {
-        persist(SaidaController.PersistAction.DELETE, 
+    public void deletarLancamentos() {
+        persist(LancamentosController.PersistAction.DELETE, 
                 "Registro excluído com sucesso!");
     }
 
@@ -92,18 +88,6 @@ public class SaidaController implements Serializable {
     public static void addSuccessMessage(String msg) {
         FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_INFO, msg, msg);
         FacesContext.getCurrentInstance().addMessage("successInfo", facesMsg);
-    }
-    
-    public SaidaEntity getSaidaById(int id) {
-        try {
-            return ejbFacade.find(id);
-        } catch (EJBException ex) {
-            addErrorMessage("Error retrieving SaidaEntity: " + ex.getMessage());
-            return null;
-        } catch (Exception ex) {
-            addErrorMessage("Error retrieving SaidaEntity: " + ex.getMessage());
-            return null;
-        }
     }
 
     /**
@@ -125,7 +109,12 @@ public class SaidaController implements Serializable {
             if (null != persistAction) {
                 switch (persistAction) {
                     case CREATE:
-                        ejbFacade.createReturn(saida);
+                        if(lancamentos.getSaida() == 0){
+                            lancamentos.setSaida(-1);
+                        } else if(lancamentos.getEntrada() == 0){
+                            lancamentos.setEntrada(-1);
+                        }
+                        ejbFacade.createReturn(lancamentos);
                         break;
                     case UPDATE:
                         ejbFacade.edit(selected);
@@ -140,7 +129,7 @@ public class SaidaController implements Serializable {
                 }
             }
             // Refresh the list after any action
-            saidaList = ejbFacade.buscarTodos();
+            lancamentosList = ejbFacade.buscarTodos();
             addSuccessMessage(successMessage);
         } catch (EJBException ex) {
             String msg = "";

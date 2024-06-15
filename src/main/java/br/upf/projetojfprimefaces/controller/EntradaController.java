@@ -84,6 +84,18 @@ public class EntradaController implements Serializable {
                 "Registro excluído com sucesso!");
     }
 
+    public EntradaEntity getEntradaByID(int id) {
+        try {
+            return ejbFacade.find(id);
+        } catch (EJBException ex) {
+            addErrorMessage("Error retrieving SaidaEntity: " + ex.getMessage());
+            return null;
+        } catch (Exception ex) {
+            addErrorMessage("Error retrieving SaidaEntity: " + ex.getMessage());
+            return null;
+        }
+    }
+    
     public static void addErrorMessage(String msg) {
         FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg);
         FacesContext.getCurrentInstance().addMessage(null, facesMsg);
@@ -127,6 +139,8 @@ public class EntradaController implements Serializable {
                         break;
                 }
             }
+            // Refresh the list after any action
+            entradaList = ejbFacade.buscarTodos();
             addSuccessMessage(successMessage);
         } catch (EJBException ex) {
             String msg = "";

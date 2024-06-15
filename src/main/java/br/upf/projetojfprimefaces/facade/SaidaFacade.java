@@ -3,6 +3,7 @@ package br.upf.projetojfprimefaces.facade;
 import br.upf.projetojfprimefaces.entity.SaidaEntity;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
@@ -46,4 +47,18 @@ public class SaidaFacade extends AbstractFacade<SaidaEntity> {
         return entityList;
     }
 
+    public SaidaEntity getEntradaByID(int id) {
+        SaidaEntity entity = null;
+        try {
+            // Using JPQL to construct the query
+            Query query = getEntityManager().createQuery("SELECT p FROM SaidaEntity p WHERE p.id = :id");
+            query.setParameter("id", id);
+            entity = (SaidaEntity) query.getSingleResult();
+        } catch (NoResultException e) {
+            System.out.println("No result found for ID: " + id);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return entity;
+    }
 }

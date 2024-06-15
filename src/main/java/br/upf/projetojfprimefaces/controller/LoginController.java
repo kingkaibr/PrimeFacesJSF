@@ -53,7 +53,7 @@ public class LoginController implements Serializable {
             //caso as credenciais foram válidas, então direciona para página index
             
             session.setAttribute("usuarioLogado", usuarioDB);
-            return "/admin/user.xhtml?faces-redirect=true";
+            return "/admin/lancamentos.xhtml?faces-redirect=true";
         } else {
             //senão, exibe uma mensagem de falha...
             FacesMessage fm = new FacesMessage(
