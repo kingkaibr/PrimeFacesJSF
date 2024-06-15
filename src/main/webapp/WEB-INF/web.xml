@@ -10,13 +10,11 @@
     </context-param>
     <servlet>
         <servlet-name>facesServlet</servlet-name>
-        <!-- Changed to match the mapping -->
         <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>facesServlet</servlet-name>
-        <!-- Changed to match the servlet definition -->
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
     <session-config>
@@ -25,7 +23,7 @@
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>/login.xhtml</welcome-file>
+        <welcome-file>login.xhtml</welcome-file>
     </welcome-file-list>
     <mime-mapping>
         <extension>woff2</extension>
